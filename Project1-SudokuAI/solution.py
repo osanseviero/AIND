@@ -84,9 +84,11 @@ def eliminate(values):
     """
     solved_values = [box for box in values.keys() if len(values[box]) == 1]
     for box in solved_values:
+        assign_value(values, box, values[box])
         digit = values[box]
         for peer in peers[box]:
             values[peer] = values[peer].replace(digit,'')
+
     return values
 
 def only_choice(values):
@@ -99,6 +101,7 @@ def only_choice(values):
         for digit in '123456789':
             dplaces = [box for box in unit if digit in values[box]]
             if len(dplaces) == 1:
+                assign_value(values, dplaces[0], digit)
                 values[dplaces[0]] = digit
     return values
 
