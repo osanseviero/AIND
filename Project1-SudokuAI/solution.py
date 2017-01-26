@@ -17,9 +17,24 @@ def naked_twins(values):
     Returns:
         the values dictionary with the naked twins eliminated from peers.
     """
+    print("UNITs")
+    for unit in unitlist:
+        for box in unit:
+            if len(values[box]) == 2:
+                box_value = values[box]
+                naked_twin_found = False
 
-    # Find all instances of naked twins
-    # Eliminate the naked twins as possibilities for their peers
+                # Check if there is a naked twin
+                for other_box in unit:
+                    if (other_box != box) and (values[box] == values[other_box]):
+                        naked_twin_found = True
+
+                # Erase values of other peers in unit
+                if naked_twin_found:
+                    for peer in unit:
+                        if values[peer] != box_value:
+                            values[peer] = values[peer].replace(box_value[0],'')
+                            values[peer] = values[peer].replace(box_value[1],'')                    
     return values
 
 def cross(a, b):
@@ -32,6 +47,7 @@ boxes = cross(rows,cols)
 
 # Units: The number can't get repeated in the same unit
 row_units = [cross(r, cols) for r in rows]
+print(row_units)
 col_units = [cross(rows, c) for c in cols]
 square_units = [cross(rs, cs) for rs in ['ABC', 'DEF', 'GHI'] for cs in ['123', '456', '789']]
 diagonal_units = [[],[]]
@@ -126,7 +142,7 @@ def reduce_puzzle(values):
     return values
 
 def solve(grid):
-    return search(grid)
+    return search(grid_values(grid))
 
 def search(values):
     "Using depth-first search and propagation, try all possible values."
@@ -148,7 +164,7 @@ def search(values):
 
 if __name__ == '__main__':
     diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
-    display(solve(grid_values(diag_sudoku_grid)))
+    display(solve(diag_sudoku_grid))
 
     try:
         from visualize import visualize_assignments
