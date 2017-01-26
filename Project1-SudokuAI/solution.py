@@ -46,7 +46,6 @@ boxes = cross(rows,cols)
 
 # Units: The number can't get repeated in the same unit
 row_units = [cross(r, cols) for r in rows]
-print(row_units)
 col_units = [cross(rows, c) for c in cols]
 square_units = [cross(rs, cs) for rs in ['ABC', 'DEF', 'GHI'] for cs in ['123', '456', '789']]
 diagonal_units = [[],[]]
