@@ -3,10 +3,12 @@
 
 # Question 1 (Naked Twins)
 Q: How do we use constraint propagation to solve the naked twins problem?
+
 A: Constraint propagation is about reducing the number of possibilities. The naked twins problems adds new conditions, so we can add new constraints in the units. 
 
 # Question 2 (Diagonal Sudoku)
 Q: How do we use constraint propagation to solve the diagonal sudoku problem?
+
 A: Constraint propagation add the condition that values can't get repeated in the two main diagonals, so there need to be more peers, and there are more limits in the problem than in normal sudoku. Contraint propagation helps us solve the diagonal problem just by adding a new rule to the game. We can specify new constraints in a new type of sudoku just like this.
 
 ### Install
