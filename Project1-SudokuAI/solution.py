@@ -17,7 +17,6 @@ def naked_twins(values):
     Returns:
         the values dictionary with the naked twins eliminated from peers.
     """
-    print("UNITs")
     for unit in unitlist:
         for box in unit:
             if len(values[box]) == 2:
