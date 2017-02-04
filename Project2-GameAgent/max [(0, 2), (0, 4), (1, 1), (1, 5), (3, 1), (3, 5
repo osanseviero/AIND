@@ -170,10 +170,10 @@ class CustomPlayer:
 
         legal_moves = game.get_legal_moves()
         if len(legal_moves) == 0 or depth == 0:
-            return self.score(game, self), (-1.0, -1.0)
+            return self.score(game, self), (-1, -1)
 
         if maximizing_player:
-            max_score_move = [0.0, (-1, -1)]
+            max_score_move = [0, (-1, -1)]
             max_score = max_score_move[0]
             for legal_move in game.get_legal_moves():
                 minimaxResult = self.minimax(game.forecast_move(legal_move), depth-1, not maximizing_player)
@@ -183,7 +183,7 @@ class CustomPlayer:
             return max_score_move
 
         if not maximizing_player:
-            min_score_move = [1000000000.0, (-1, -1)]
+            min_score_move = [1000000000, (-1, -1)]
             min_score = min_score_move[0]
             for legal_move in game.get_legal_moves():
                 minimaxResult = self.minimax(game.forecast_move(legal_move), depth-1, not maximizing_player)
