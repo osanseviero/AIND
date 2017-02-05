@@ -7,6 +7,7 @@ You must test your agent's strength against a set of agents with known
 relative strength using tournament.py and include the results in your report.
 """
 import random
+import math
 
 
 class Timeout(Exception):
@@ -173,9 +174,9 @@ class CustomPlayer:
             return self.score(game, self), (-1.0, -1.0)
 
         if maximizing_player:
-            max_score_move = [0.0, (-1, -1)]
+            max_score_move = [-math.inf, (-1, -1)]
             max_score = max_score_move[0]
-            for legal_move in game.get_legal_moves():
+            for legal_move in legal_moves:
                 minimaxResult = self.minimax(game.forecast_move(legal_move), depth-1, not maximizing_player)
                 if minimaxResult[0] > max_score:
                     max_score = minimaxResult[0]
@@ -183,7 +184,7 @@ class CustomPlayer:
             return max_score_move
 
         if not maximizing_player:
-            min_score_move = [1000000000.0, (-1, -1)]
+            min_score_move = [math.inf, (-1, -1)]
             min_score = min_score_move[0]
             for legal_move in game.get_legal_moves():
                 minimaxResult = self.minimax(game.forecast_move(legal_move), depth-1, not maximizing_player)
@@ -204,7 +205,7 @@ class CustomPlayer:
             current game state
 
         depth : int
-            Depth is an integer representing the maximum number of plies to
+            Depth is an integer representing  the maximum number of plies to
             search in the game tree before aborting
 
         alpha : float
