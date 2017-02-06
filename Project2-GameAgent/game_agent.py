@@ -14,7 +14,7 @@ class Timeout(Exception):
     """Subclass base exception for code clarity."""
     pass
 
-def first_score(game, player):
+def proportion_heuristic(game, player):
     """Divide the number of moves and get a proportion"""
     if game.is_loser(player):
         return float("-inf")
@@ -26,6 +26,36 @@ def first_score(game, player):
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
 
     return own_moves/opp_moves
+
+def center_heuristic(game, player):
+    """Higher value if player is closer to the center"""
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_pos = game.get_player_location(player)
+    opp_pos = game.get_player_location(game.get_opponent(player))
+
+    own_dist_from_center = math.sqrt((own_pos[0] - game.width/2 )**2 + (own_pos[1] - game.height/2)**2)
+    
+    return 10 - own_dist_from_center
+
+def center_heuristic2(game, player):
+    """Higher value if player is closer to the center"""
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_pos = game.get_player_location(player)
+    opp_pos = game.get_player_location(game.get_opponent(player))
+
+    own_dist_from_center = math.sqrt((own_pos[0] - game.width/2 )**2 + (own_pos[1] - game.height/2)**2)
+    
+    return 10 - own_dist_from_center
 
 def custom_score(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -47,7 +77,7 @@ def custom_score(game, player):
         The heuristic value of the current game state to the specified player.
     """
 
-    return first_score(game, player)
+    return center_heuristic(game, player)
 
 
 
