@@ -54,8 +54,20 @@ def center_heuristic2(game, player):
     opp_pos = game.get_player_location(game.get_opponent(player))
 
     own_dist_from_center = math.sqrt((own_pos[0] - game.width/2 )**2 + (own_pos[1] - game.height/2)**2)
+    opp_dist_from_center = math.sqrt((opp_pos[0] - game.width/2 )**2 + (opp_pos[1] - game.height/2)**2)
     
-    return 10 - own_dist_from_center
+    return 2 * own_dist_from_center - 3 * opp_dist_from_center
+
+def weighted_moves(game, player):
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    return float(own_moves - 2*opp_moves)
 
 def custom_score(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -77,7 +89,7 @@ def custom_score(game, player):
         The heuristic value of the current game state to the specified player.
     """
 
-    return center_heuristic(game, player)
+    return proportion_heuristic(game, player)
 
 
 
@@ -113,7 +125,7 @@ class CustomPlayer:
     """
 
     def __init__(self, search_depth=3, score_fn=custom_score,
-                 iterative=True, method='minimax', timeout=40.):
+                 iterative=True, method='minimax', timeout=50.):
         self.search_depth = search_depth
         self.iterative = iterative
         self.score = score_fn
@@ -279,7 +291,7 @@ class CustomPlayer:
         tuple(int, int)
             The best move for the current branch; (-1, -1) for no legal moves
         """
-        if self.time_left() < self.TIMER_THRESHOLD-10.0:
+        if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
 
         # TODO: finish this function!
