@@ -113,9 +113,7 @@ def depthFirstSearch(problem):
   print "Is the start a goal?", problem.isGoalState(problem.getStartState())
   print "Start's successors:", problem.getSuccessors(problem.getStartState())
   """
-  "*** YOUR CODE HERE ***"
   # Algorithm based on AIMA
-
   frontier =  util.Stack()
   return graphSearch(problem, frontier)
 
@@ -124,14 +122,14 @@ def breadthFirstSearch(problem):
   Search the shallowest nodes in the search tree first.
   [2nd Edition: p 73, 3rd Edition: p 82]
   """
-  "*** YOUR CODE HERE ***"
   frontier = util.PriorityQueueWithFunction(len)
   return graphSearch(problem, frontier)
       
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
-  "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  cost = lambda path: problem.getCostOfActions(x[1] for x in path)
+  frontier = util.PriorityQueueWithFunction(cost)
+  return graphSearch(problem, frontier) 
 
 def nullHeuristic(state, problem=None):
   """
