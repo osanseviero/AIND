@@ -67,6 +67,36 @@ def tinyMazeSearch(problem):
   w = Directions.WEST
   return  [s,s,w,s,w,w,s,w]
 
+def graphSearch(problem, frontier):
+  explored = []
+
+  # Add to frontier but don't move yet
+  frontier.push([(problem.getStartState(), "Stop", 0)])
+
+  while not frontier.isEmpty():
+    path = frontier.pop()
+
+    # Gets the coordinates
+    state = path[len(path)-1]
+    state = state[0]
+
+    if problem.isGoalState(state):
+      return [x[1] for x in path][1:]
+
+    # Explored the contiguous states if not explored
+    if state not in explored:
+      explored.append(state)
+
+      for successor in problem.getSuccessors(state):
+
+        if successor[0] not in explored:
+          successorPath = path[:]
+          successorPath.append(successor)
+          frontier.push(successorPath)
+
+  return []
+
+
 def depthFirstSearch(problem):
   """
   Search the deepest nodes in the search tree first
@@ -84,7 +114,10 @@ def depthFirstSearch(problem):
   print "Start's successors:", problem.getSuccessors(problem.getStartState())
   """
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  # Algorithm based on AIMA
+
+  frontier =  util.Stack()
+  return graphSearch(problem, frontier)
 
 def breadthFirstSearch(problem):
   """
@@ -92,7 +125,8 @@ def breadthFirstSearch(problem):
   [2nd Edition: p 73, 3rd Edition: p 82]
   """
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  frontier = util.PriorityQueueWithFunction(len)
+  return graphSearch(problem, frontier)
       
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
