@@ -340,10 +340,10 @@ class CornersProblem(search.SearchProblem):
       if self.walls[x][y]: return 999999
     return len(actions)
 
-
 def cornersHeuristic(state, problem):
   """
   A heuristic for the CornersProblem that you defined.
+  Note: This heuristic is not mine, just a testing
   
     state:   The current search state 
              (a data structure you chose in your search problem)
@@ -354,6 +354,7 @@ def cornersHeuristic(state, problem):
   on the shortest path from the state to a goal of the problem; i.e.
   it should be admissible (as well as consistent).
   """
+
   corners = problem.corners # These are the corner coordinates
   walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
   
@@ -372,6 +373,29 @@ class AStarCornersAgent(SearchAgent):
   def __init__(self):
     self.searchFunction = lambda prob: search.aStarSearch(prob, cornersHeuristic)
     self.searchType = CornersProblem
+
+
+def closestPoint(origin, pointList):
+  """
+    Find the closest point given a list of possible places
+  """
+
+  if len(pointList) == 0:
+    return None
+
+  closest = pointList[0]
+  cost = distance(origin, closest)
+  for point in pointList[1:]:
+    thisCost = distance(origin, point)
+    if thisCost < cost:
+      closest = point
+      cost = thisCost 
+
+  return closest
+
+def distance(a, b):
+  return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
 
 class FoodSearchProblem:
   """
@@ -455,8 +479,12 @@ def foodHeuristic(state, problem):
   Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
   """
   position, foodGrid = state
-  "*** YOUR CODE HERE ***"
-  return 0
+  foodList = foodGrid.asList()
+  if len(foodList) == 0:
+    return 0
+  
+  closest = closestPoint(position, foodList)
+  return distance(position, closest) + len(foodList)
   
 class ClosestDotSearchAgent(SearchAgent):
   "Search for all food using a sequence of searches"
