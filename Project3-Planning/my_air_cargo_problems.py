@@ -136,7 +136,30 @@ class AirCargoProblem(Problem):
         :return: list of Action objects
         """
         # TODO implement
+
         possible_actions = []
+        decoded_state = decode_state(state, self.state_map)
+        ds_pos = decoded_state.pos
+        ds_neg = decoded_state.neg
+
+        for action in self.actions_list():
+            valid = True
+
+            # Check if action is valid in positive preconditions
+            for pos_precondition in action.precond_pos:
+                if pos_precondition not in ds_pos:
+                    valid = False
+                    break
+
+            # Check if action is valid in positive preconditions
+            for neg_precondition in action.precond_neg:
+                if neg_precondition not in ds_neg:
+                    valid = False
+                    break
+
+            if valid:
+                possible_actions.append(action)
+
         return possible_actions
 
     def result(self, state: str, action: Action):
@@ -150,6 +173,23 @@ class AirCargoProblem(Problem):
         """
         # TODO implement
         new_state = FluentState([], [])
+
+        decoded_state = decode_state(state, self.state_map)
+        ds_pos = decoded_state.pos
+        ds_neg = decoded_state.neg
+
+
+        # If action adds, append to positive and remove of negative
+        for add in action.effect_add:
+            ds_pos.append(add)
+            ds_neg.remove(add)
+
+        # If action removes, append to negative and remove of positive
+        for rem in action.effect_rem:
+            ds_neg.append(rem)
+            ds_pos.append(pos)
+
+        new_state = FluentState(ds_pos, ds_neg)
         return encode_state(new_state, self.state_map)
 
     def goal_test(self, state: str) -> bool:
