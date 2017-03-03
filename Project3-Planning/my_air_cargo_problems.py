@@ -24,7 +24,7 @@ class AirCargoProblem(Problem):
             positive and negative literal fluents (as expr) describing initial state
         :param goal: list of expr
             literal fluents required for goal test
-        """     
+        """
         self.state_map = initial.pos + initial.neg
         self.initial_state_TF = encode_state(initial, self.state_map)
         Problem.__init__(self, self.initial_state_TF, goal=goal)
@@ -62,8 +62,8 @@ class AirCargoProblem(Problem):
             for plane in self.planes:
                 for cargo in self.cargos:
                     for airport in self.airports:
-                        precond_pos = [expr("At({}, {}))".format(cargo, airport), 
-                                    expr("At({}, {}))".format(plane, airport)]  
+                        precond_pos = [expr("At({}, {}))".format(cargo, airport),
+                                    expr("At({}, {}))".format(plane, airport)]
                         precond_neg = []
                         precond = [precond_post, precond_neg]
                         effect_add = [expr("In({}, {}))".format(cargo, plane)]
@@ -71,7 +71,7 @@ class AirCargoProblem(Problem):
                         effect = [effect_add, effect_rem]
 
                         # Create the action and add to list
-                        load = Action(expr("Load({}, {}, {}))".format(cargo, plane, airport), 
+                        load = Action(expr("Load({}, {}, {}))".format(cargo, plane, airport),
                             precond, effect )
                         loads.append(load)
 
@@ -88,8 +88,8 @@ class AirCargoProblem(Problem):
             for plane in self.planes:
                 for cargo in self.cargos:
                     for airport in self.airports:
-                        precond_pos = [expr("In({}, {}))".format(cargo, plane), 
-                                    expr("At({}, {}))".format(plane, airport)]  
+                        precond_pos = [expr("In({}, {}))".format(cargo, plane),
+                                    expr("At({}, {}))".format(plane, airport)]
                         precond_neg = []
                         precond = [precond_post, precond_neg]
                         effect_add = [expr("At({}, {}))".format(cargo, airport)]
@@ -97,11 +97,11 @@ class AirCargoProblem(Problem):
                         effect = [effect_add, effect_rem]
 
                         # Create the action and add to list
-                        unload = Action(expr("Load({}, {}, {}))".format(cargo, plane, airport), 
+                        unload = Action(expr("Load({}, {}, {}))".format(cargo, plane, airport),
                             precond, effect )
-                        unloads.append(load)
+                        unloads.append(unload)
 
-            
+
             return unloads
 
         def fly_actions():

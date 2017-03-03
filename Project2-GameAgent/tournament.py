@@ -5,13 +5,11 @@ alpha-beta search agents by running a round-robin tournament for the student
 agent. Note that all agents are constructed from the student CustomPlayer
 implementation, so any errors present in that class will affect the outcome
 here.
-
 The student agent plays a fixed number of "fair" matches against each test
 agent. The matches are fair because the board is initialized randomly for both
 players, and the players play each match twice -- switching the player order
 between games. This helps to correct for imbalances in the game due to both
 starting position and initiative.
-
 For example, if the random moves chosen for initialization are (5, 2) and
 (1, 3), then the first match will place agentA at (5, 2) as player 1 and
 agentB at (1, 3) as player 2 then play to conclusion; the agents swap
@@ -160,9 +158,8 @@ def main():
     # systems; i.e., the performance of the student agent is considered
     # relative to the performance of the ID_Improved agent to account for
     # faster or slower computers.
-    test_agents = [Agent(CustomPlayer(score_fn=custom_score, **CUSTOM_ARGS), "Student"),
-                Agent(CustomPlayer(score_fn=improved_score, **CUSTOM_ARGS), "ID_Improved")
-                ]
+    test_agents = [Agent(CustomPlayer(score_fn=improved_score, **CUSTOM_ARGS), "ID_Improved"),
+                   Agent(CustomPlayer(score_fn=custom_score, **CUSTOM_ARGS), "Student")]
 
     print(DESCRIPTION)
     for agentUT in test_agents:
