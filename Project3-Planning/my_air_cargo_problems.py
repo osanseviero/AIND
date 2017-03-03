@@ -24,7 +24,7 @@ class AirCargoProblem(Problem):
             positive and negative literal fluents (as expr) describing initial state
         :param goal: list of expr
             literal fluents required for goal test
-        """
+        """     
         self.state_map = initial.pos + initial.neg
         self.initial_state_TF = encode_state(initial, self.state_map)
         Problem.__init__(self, self.initial_state_TF, goal=goal)
@@ -58,7 +58,21 @@ class AirCargoProblem(Problem):
             :return: list of Action objects
             '''
             loads = []
-            # TODO create all load ground actions from the domain Load action
+            # Iterate over all possible combinations and create the respective load action
+            for plane in self.planes:
+                for cargo in self.cargos:
+                    for airport in self.airports:
+                        precond_pos = [expr("At({}, {}))".format(cargo, airport), 
+                                    expr("At({}, {}))".format(plane, airport)]  
+                        precond_neg = []
+                        precond = [precond_post, precond_neg]
+                        effect_add = [expr("In({}, {}))".format(cargo, plane)]
+                        effect_rem = [expr("In({}, {}))".format(cargo, plane)]
+                        effect = [effect_add, effect_rem]
+                        load = Action(expr("Load({}, {}, {}))".format(cargo, plane, airport), 
+                            precond, effect )
+                        loads.append(load)
+
             return loads
 
         def unload_actions():
