@@ -420,8 +420,13 @@ class PlanningGraph():
         :param node_a2: PgNode_a
         :return: bool
         '''
-        # TODO test for Interference between nodes
-        return False
+        action1 = node_a1.action
+        action2 = node_a2.action
+
+        return set(action1.effect_add) & set(action2.precond_neg) or \
+            set(action1.effect_rem) & set(action2.precond_pos) or \
+            set(action2.effect_add) & set(action1.precond_neg) or \
+            set(action2.effect_rem) & set(action1.precond_pos)
 
     def competing_needs_mutex(self, node_a1: PgNode_a, node_a2: PgNode_a) -> bool:
         '''
@@ -433,8 +438,11 @@ class PlanningGraph():
         :param node_a2: PgNode_a
         :return: bool
         '''
-
-        # TODO test for Competing Needs between nodes
+        # Check if between all the previous state nodes there is a mutual exclusive relationship
+        for state_1 in node_a1.parents:
+            for state_2 in node_a2.parents:
+                if state_1.is_mutex(state_2):
+                    return True
         return False
 
     def update_s_mutex(self, nodeset: set):
@@ -469,8 +477,7 @@ class PlanningGraph():
         :param node_s2: PgNode_s
         :return: bool
         '''
-        # TODO test for negation between nodes
-        return False
+        return node_s1.symbol == node_s2.symbol and node_s1.is_pos != node_s2.is_pos
 
     def inconsistent_support_mutex(self, node_s1: PgNode_s, node_s2: PgNode_s):
         '''
@@ -488,8 +495,14 @@ class PlanningGraph():
         :param node_s2: PgNode_s
         :return: bool
         '''
-        # TODO test for Inconsistent Support between nodes
-        return False
+        actions_s1 = node_s1.parents
+        actions_s2 = node_s2.parents
+
+        for a1_node in actions_s1:
+            for a2_node in actions_s2:
+                if not a1_node.is_mutex(a2_node):
+                    return False
+        return True
 
     def h_levelsum(self) -> int:
         '''The sum of the level costs of the individual goals (admissible if goals independent)
@@ -497,6 +510,23 @@ class PlanningGraph():
         :return: int
         '''
         level_sum = 0
-        # TODO implement
-        # for each goal in the problem, determine the level cost, then add them together
+        for goal in self.problem.goal:
+            level = 0
+            while True:
+                states_nodes = self.s_levels[level]
+                literals = []
+                for s_node in states_nodes:
+                    literals.append(s_node.literal)
+                if goal in literals:
+                    break
+                else:
+                    level = level + 1
+            level_sum = level_sum + level
         return level_sum
+
+
+
+
+
+
+
