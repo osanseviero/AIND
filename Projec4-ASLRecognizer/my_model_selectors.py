@@ -48,8 +48,8 @@ class ModelSelector(object):
 
 
 class SelectorConstant(ModelSelector):
-    """ select the model with value self.n_constant
-
+    """ 
+        select the model with value self.n_constant
     """
 
     def select(self):
@@ -74,18 +74,14 @@ class SelectorBIC(ModelSelector):
         """
         model = self.base_model(n_components)
         logL = model.score(self.X, self.lengths)
-        logN = np.log(len(self.lengths))
+        logN = np.log(len(self.X))
 
-        # I'm not sure about the correct implementation of p. I saw different formulas for this one.
-        p = (model.n_components * model.n_features) - (model.n_components * model.n_components - 1)
+        # p = = n^2 + 2*d*n - 1
+        d = self.max_n_components + 1
+        p = n_components ** 2 + 2 * d * n_components - 1
 
         return -2.0 * logL + p * logN, model
 
-
-# of probabilities in transition matrix + 
-    # of Gaussian mean + 
-    # of Gaussian variance = 
-    n*(n-1) + 2*d*n
 
     def select(self):
         """ select the best model for self.this_word based on
@@ -93,7 +89,9 @@ class SelectorBIC(ModelSelector):
 
         :return: GaussianHMM object
         """
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         try:
+            best_score = 0
             for n in range(self.min_n_components, self.max_n_components + 1):
                 if self.bic_score(n) > best_score:
                     best_score, model = self.bic_score(n)
@@ -105,28 +103,79 @@ class SelectorBIC(ModelSelector):
 
 
 class SelectorDIC(ModelSelector):
-    ''' select best model based on Discriminative Information Criterion
+    """ select best model based on Discriminative Information Criterion
 
     Biem, Alain. "A model selection criterion for classification: Application to hmm topology optimization."
     Document Analysis and Recognition, 2003. Proceedings. Seventh International Conference on. IEEE, 2003.
     http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.58.6208&rep=rep1&type=pdf
     DIC = log(P(X(i)) - 1/(M-1)SUM(log(P(X(all but i))
-    '''
+    """
+
+    def dic_score(self, n_components):
+        """
+        Calculate DIC score
+        """
+        model = self.base_model(n_components)
+
+        logP = model.score(self.X, self.lengths)
+        M = len(logP)
+
+        sum_log_p = 0
+        for word, (X, l) in self.hwords.items():
+            if word != self.this_word:
+                sum_log_p = sum_log_p + model.score(X, l)
+
+        return logP - 1/(M-1)*sum_log_p 
 
     def select(self):
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        """ select the best model for self.this_word based on
+        DIC score for n between self.min_n_components and self.max_n_components
 
-        # TODO implement model selection based on DIC scores
-        raise NotImplementedError
+        :return: GaussianHMM object
+        """
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        try:
+            best_score = 0
+            for n in range(self.min_n_components, self.max_n_components + 1):
+                if self.dic_score(n) > best_score:
+                    best_score, model = self.dic_score(n)
+            return model
+
+        except Exception as e:
+            return self.base_model(self.n_constant)
 
 
 class SelectorCV(ModelSelector):
     ''' select best model based on average log Likelihood of cross-validation folds
 
     '''
+    def cv_score(self, n_components):
+        scores = []
+        split_method = KFold(2)
+
+        for train_idx, test_idx in split_method.split(self.sequences):
+            self.X, self.lengths = combine_sequences(train_idx, test_idx)
+
+            model = self.base_model(n_components)
+            X, l = combine_sequences(test_idx, self.sequences)
+            
+            # Add the new score to the scores list
+            scores.append(model.score(X, l))
+
+        return np.mean(scores)
 
     def select(self):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # TODO implement model selection using CV
-        raise NotImplementedError
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        try:
+            best_score = 0
+            for n in range(self.min_n_components, self.max_n_components + 1):
+                if self.cv_score(n) > best_score:
+                    best_score, model = self.cv_score(n)
+            return model
+
+        except Exception as e:
+            return self.base_model(self.n_constant)
+
