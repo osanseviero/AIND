@@ -68,16 +68,40 @@ class SelectorBIC(ModelSelector):
     Bayesian information criteria: BIC = -2 * logL + p * logN
     """
 
+    def bic_score(self, n_components):
+        """
+        Calculate BIC score
+        """
+        model = self.base_model(n_components)
+        logL = model.score(self.X, self.lengths)
+        logN = np.log(len(self.lengths))
+
+        # I'm not sure about the correct implementation of p. I saw different formulas for this one.
+        p = (model.n_components * model.n_features) - (model.n_components * model.n_components - 1)
+
+        return -2.0 * logL + p * logN, model
+
+
+# of probabilities in transition matrix + 
+    # of Gaussian mean + 
+    # of Gaussian variance = 
+    n*(n-1) + 2*d*n
+
     def select(self):
         """ select the best model for self.this_word based on
         BIC score for n between self.min_n_components and self.max_n_components
 
         :return: GaussianHMM object
         """
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        try:
+            for n in range(self.min_n_components, self.max_n_components + 1):
+                if self.bic_score(n) > best_score:
+                    best_score, model = self.bic_score(n)
+            return model
 
-        # TODO implement model selection based on BIC scores
-        raise NotImplementedError
+        except Exception as e:
+            return self.base_model(self.n_constant)
+
 
 
 class SelectorDIC(ModelSelector):
