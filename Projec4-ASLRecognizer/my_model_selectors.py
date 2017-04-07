@@ -165,9 +165,9 @@ class SelectorCV(ModelSelector):
         return np.mean(scores)
 
     def select(self):
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-        # TODO implement model selection using CV
+        """
+            select the best model based on CV score.
+        """
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         try:
             best_score = 0
